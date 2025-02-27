@@ -19,13 +19,12 @@ with sync_playwright() as playwright:
     password_input = page.get_by_test_id('registration-form-password-input').locator('input')
     password_input.fill('password')
 
-    # Регистрация
+    # Регистрация -
     registration_button = page.get_by_test_id('registration-page-registration-button')
     registration_button.click()
 
     # Сохранение состояния браузера - в json
     context.storage_state(path="browser-state.json")
-
 
 
 with sync_playwright() as playwright:
