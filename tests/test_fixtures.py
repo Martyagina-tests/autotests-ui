@@ -1,5 +1,5 @@
 import  pytest
 
-@pytest.fixture( )
+@pytest.fixture()
 def send_analytics_data():
-    ....
+    ...
