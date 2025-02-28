@@ -1,5 +1,9 @@
+import pytest
 from playwright.sync_api import sync_playwright, expect
 
+
+@pytest.mark.regression
+@pytest.mark.courses
 def test_empty_courses_list():
     with sync_playwright() as playwright:
         # Запуск браузера и создание контекста
@@ -38,13 +42,13 @@ def test_empty_courses_list():
         expect(courses_title).to_have_text("Courses")
 
         # Иконка ( еще можно to_be_attached() , to_be_in_viewport() )
-        icon_folder = page.get_by_test_id("courses-list-empty-view-icon")
-        expect(icon_folder).to_be_visible()
+        empty_view_icon = page.get_by_test_id('courses-list-empty-view-icon')
+        expect(empty_view_icon).to_be_visible()
 
         # Проверяем текст
-        no_results_title = page.get_by_test_id("courses-list-empty-view-title-text")
-        expect(no_results_title).to_have_text("There is no results")
+        empty_view_title = page.get_by_test_id('courses-list-empty-view-title-text')
+        expect(empty_view_title).to_have_text("There is no results")
 
         # Проверяем еще текст
-        description_text = page.get_by_test_id("courses-list-empty-view-description-text")
-        expect(description_text).to_have_text("Results from the load test pipeline will be displayed here")
+        empty_view_description = page.get_by_test_id("courses-list-empty-view-description-text")
+        expect(empty_view_description).to_have_text("Results from the load test pipeline will be displayed here")
