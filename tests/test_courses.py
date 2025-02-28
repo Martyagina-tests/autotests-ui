@@ -1,8 +1,9 @@
 import pytest
-from playwright.sync_api import sync_playwright, Playwright, Page, expect
+from playwright.sync_api import Playwright, Page, expect
 
-
-def test_empty_courses_list(chromium_page_with_state):
+@pytest.mark.regression
+@pytest.mark.courses
+def test_empty_courses_list(chromium_page_with_state: Page):
     # Используем фикстуру для получения страницы
     page = chromium_page_with_state
 

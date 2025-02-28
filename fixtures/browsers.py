@@ -38,7 +38,8 @@ def initialize_browser_state(playwright: Playwright) -> None:
     # Сохранение состояния браузера в файл
     context.storage_state(path="browser-state.json")
 
-    # Закрытие браузер
+    # Закрытие контекста и браузера
+    context.close()
     browser.close()
 
 
