@@ -13,5 +13,5 @@ import pytest
         "Пустой email и невалидный password",
     ]
 )
-def test_wrong_email_or_password_authorization(email: str, password: str):
+def test_wrong_email_or_password_authorization_1(email: str, password: str):
     pass

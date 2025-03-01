@@ -1,14 +1,31 @@
 import pytest
-from playwright.sync_api import sync_playwright, Page, Playwright
+from pages.login_page import LoginPage
 
-def test_wrong_email_or_password_authorization(chromium_page: Page):
-    chromium_page.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login")
 
-    email_input = chromium_page.get_by_test_id('login-form-email-input').locator('input')
-    email_input.fill('user.name.gmail.com')
+@pytest.mark.regression
+@pytest.mark.authorization
+@pytest.mark.parametrize(
+    "email, password",
+    [
+        ("user.name@gmail.com", "password"),  # Невалидные email и password
+        ("user.name@gmail.com", "  "),       # Невалидный email и пустой password
+        ("  ", "password"),                  # Пустой email и невалидный password
+    ],
+    ids=[
+        "Невалидные email и password",
+        "Невалидный email и пустой password",
+        "Пустой email и невалидный password",
+    ]
+)
+def test_wrong_email_or_password_authorization(login_page: LoginPage, email: str, password: str):
+    # Переход на страницу авторизации
+    login_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login")
 
-    password_input = chromium_page.get_by_test_id('login-form-password-input').locator('input')
-    password_input.fill('password')
+    # Заполнение формы авторизации
+    login_page.fill_login_form(email=email, password=password)
 
-    login_button = chromium_page.get_by_test_id('login-page-login-button')
-    login_button.click()
+    # Нажатие на кнопку входа
+    login_page.click_login_button()
+
+    # Проверка сообщения об ошибке
+    login_page.check_visible_wrong_email_or_password_alert()

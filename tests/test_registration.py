@@ -1,31 +1,33 @@
 import pytest
-from playwright.sync_api import sync_playwright
+from pages.registration_page import RegistrationPage
+from pages.dashboard_page import DashboardPage
+
 
 @pytest.mark.regression
 @pytest.mark.registration
-def test_successful_registration():
-    with sync_playwright() as playwright:
-        # Запуск браузера и создание контекста
-        browser = playwright.chromium.launch(headless=False)
-        context = browser.new_context()  # Создание контекста
-        page = context.new_page()  # Создание страницы
+@pytest.mark.parametrize(
+    "email, username, password",
+    [
+        ("user.name@gmail.com", "успех", "password"),
+        ("user123.name@gmail.com", "успех", "password123")
+    ],
+    ids=[
+        "Успешная регистрация первого пользователя",
+        "Успешная регистрация второго пользователя"
+    ]
+)
+def test_successful_registration(registration_page: RegistrationPage, email: str, username: str, password: str,
+                                 dashboard_page: DashboardPage):
+    # Переход на страницу регистрации
+    registration_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/registration")
 
-        # Открытие страницы регистрации
-        page.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/registration")
+    # Заполнение формы регистрации
+    registration_page.fill_registration_form(email=email, username=username, password=password)
 
-        # Заполнение полей регистрации
-        email_input = page.get_by_test_id('registration-form-email-input').locator('input')
-        email_input.fill('user.name@gmail.com')
+    # Нажатие на кнопку регистрации
+    registration_page.click_registration_button()
 
-        username_input = page.get_by_test_id('registration-form-username-input').locator('input')
-        username_input.fill('username')
+    dashboard_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/dashboard")
+    dashboard_page.check_dashboard_title_is_visible()
 
-        password_input = page.get_by_test_id('registration-form-password-input').locator('input')
-        password_input.fill('password')
 
-        # Регистрация -
-        registration_button = page.get_by_test_id('registration-page-registration-button')
-        registration_button.click()
-
-        # Сохранение состояния браузера - в json
-        context.storage_state(path="browser-state.json")

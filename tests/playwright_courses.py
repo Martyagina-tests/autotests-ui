@@ -24,7 +24,7 @@ with sync_playwright() as playwright:
     registration_button.click()
 
     # Сохранение состояния браузера - в json
-    context.storage_state(path="browser-state.json")
+    context.storage_state(path="../browser-state.json")
 
 
 with sync_playwright() as playwright:
