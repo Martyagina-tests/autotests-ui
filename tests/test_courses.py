@@ -1,27 +1,66 @@
 import pytest
-from playwright.sync_api import Playwright, Page, expect
+from pages.courses_list_page import CoursesListPage
+from pages.create_course_page import CreateCoursePage
 
-@pytest.mark.regression
 @pytest.mark.courses
-def test_empty_courses_list(chromium_page_with_state: Page):
-    # Используем фикстуру для получения страницы
-    page = chromium_page_with_state
+@pytest.mark.regression
+def test_create_course(courses_list_page: CoursesListPage, create_course_page: CreateCoursePage):
+    # Шаг 1: Открыть страницу создания курса
+    create_course_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses/create")
 
-    # Переход на страницу курсов
-    page.goto("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses")
+    # Шаг 2: Проверить заголовок "Create Course"
+    create_course_page.check_visible_create_course_title()
 
-    # Проверка заголовка "Courses"
-    courses_title = page.get_by_test_id("courses-list-toolbar-title-text")
-    expect(courses_title).to_have_text("Courses")
+    # Шаг 3: Проверить, что кнопка создания курса недоступна
+    create_course_page.check_disabled_create_course_button()
 
-    # Проверка видимости иконки
-    empty_view_icon = page.get_by_test_id('courses-list-empty-view-icon')
-    expect(empty_view_icon).to_be_visible()
+    # Шаг 4: Проверить пустой блок предпросмотра изображения
+    create_course_page.check_visible_image_preview_empty_view()
 
-    # Проверка текста "There is no results"
-    empty_view_title = page.get_by_test_id('courses-list-empty-view-title-text')
-    expect(empty_view_title).to_have_text("There is no results")
+    # Шаг 5: Проверить блок загрузки изображения
+    create_course_page.check_visible_image_upload_view()
 
-    # Проверка текста "Results from the load test pipeline will be displayed here"
-    empty_view_description = page.get_by_test_id("courses-list-empty-view-description-text")
-    expect(empty_view_description).to_have_text("Results from the load test pipeline will be displayed here")
+    # Шаг 6: Проверить форму создания курса
+    create_course_page.check_visible_create_course_form()
+
+    # Шаг 7: Проверить заголовок "Exercises"
+    create_course_page.check_visible_exercises_title()
+
+    # Шаг 8: Проверить кнопку создания задания
+    create_course_page.check_visible_create_exercise_button()
+
+    # Шаг 9: Проверить блок с пустыми заданиями
+    create_course_page.check_visible_exercises_empty_view()
+
+    # Шаг 10: Загрузить изображение
+    create_course_page.upload_preview_image("./testdata/files/image.png")
+
+    # Шаг 11: Проверить состояние загрузки изображения
+    create_course_page.check_visible_image_upload_view()
+
+    # Шаг 12: Заполнить форму создания курса
+    create_course_page.fill_create_course_form(
+        title="Playwright",
+        estimated_time="2 weeks",
+        description="Playwright",
+        max_score="100",
+        min_score="10"
+    )
+
+    # Шаг 13: Нажать кнопку создания курса
+    create_course_page.click_create_course_button()
+
+    # Шаг 14: Проверить заголовок "Courses" на странице списка курсов
+    courses_list_page.check_visible_courses_title()
+
+    # Шаг 15: Проверить кнопку создания курса
+    courses_list_page.check_visible_create_course_button()
+
+    # Шаг 16: Проверить карточку курса
+    courses_list_page.check_visible_course_card(
+        index=0,
+        title="Playwright",
+        estimated_time="2 weeks",
+        max_score="100",
+        min_score="10"
+    )
