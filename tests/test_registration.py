@@ -22,7 +22,7 @@ def test_successful_registration(registration_page: RegistrationPage, email: str
     registration_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/registration")
 
     # Заполнение формы регистрации
-    registration_page.fill_registration_form(email=email, username=username, password=password)
+    registration_page.registration_form.fill(email=email, username=username, password=password)
 
     # Нажатие на кнопку регистрации
     registration_page.click_registration_button()
