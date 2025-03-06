@@ -1,15 +1,18 @@
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
+from elements.text import Text
+from elements.button import Button
 
 class CreateExerciseToolbarViewComponent:
     def __init__(self, page: Page):
         self.page = page
-        self.title = page.get_by_test_id('create-course-exercises-box-toolbar-title-text')
-        self.button = page.get_by_test_id('create-course-exercises-box-toolbar-create-exercise-button')
+        self.title = Text(page,'create-course-exercises-box-toolbar-title-text', "Exercises")
+        self.button = Button(page,'create-course-exercises-box-toolbar-create-exercise-button', "Create exercise button")
 
     def check_visible(self):
-        expect(self.title).to_be_visible()
-        expect(self.title).to_have_text('Exercises')
-        expect(self.button).to_be_visible()
+        self.title.check_visible()
+        self.title.check_have_text('Exercises')
+        self.button.check_visible()
+
 
     def click_create_course_button(self):
         self.button.click()

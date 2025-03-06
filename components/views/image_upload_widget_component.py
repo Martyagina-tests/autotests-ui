@@ -47,4 +47,4 @@ class ImageUploadWidgetComponent(BaseComponent):
         self.remove_button.click()
 
     def upload_preview_image(self, file: str):
-        self.upload_input.locator.set_input_files(file)
+        self.upload_input.set_input_files(file)
