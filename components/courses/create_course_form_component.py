@@ -6,8 +6,8 @@ class CreateCourseFormComponent(BaseComponent):
     def __init__(self, page: Page):
         super().__init__(page)
 
-        self.title_input = page.get_by_test_id('create-course-form-title-input').locator('input')
-        self.estimated_time_input = (
+        self.title = page.get_by_test_id('create-course-form-title-input').locator('input')
+        self.estimated_time = (
             page.get_by_test_id('create-course-form-estimated-time-input').locator('input')
         )
         self.description_textarea = (
@@ -16,19 +16,20 @@ class CreateCourseFormComponent(BaseComponent):
         self.max_score_input = page.get_by_test_id('create-course-form-max-score-input').locator('input')
         self.min_score_input = page.get_by_test_id('create-course-form-min-score-input').locator('input')
 
-    def fill(self, title_input: str, estimated_time_input: str, description_textarea: str, max_score_input: str, min_score_input: str):
-        self.title_input.fill(title_input)
-        self.estimated_time_input.fill(estimated_time_input)
-        self.description_textarea.fill(description_textarea)
-        self.max_score_input.fill(max_score_input)
-        self.min_score_input.fill(min_score_input)
+    def fill(self, title: str, estimated_time: str, description: str, max_score: str, min_score: str):
+        self.title.fill(title)
+        self.estimated_time.fill(estimated_time)
+        self.description_textarea.fill(description)
+        self.max_score_input.fill(max_score)
+        self.min_score_input.fill(min_score)
 
-    def check_visible(self, title_input: str, estimated_time_input: str, description_textarea: str, max_score_input: str, min_score_input: str):
-        expect.title_input(self.title_input).to_be_visiable()
-        expect.estimated_time_input(self.estimated_time_input).to_be_visiable()
-        expect.description_textarea(self.description_textarea).to_be_visiable()
-        expect.max_score_input(self.max_score_input).to_be_visiable()
-        expect.min_score_input(self.min_score_input).to_be_visiable()
+    def check_visible(self, title: str, estimated_time: str, description: str, max_score: str, min_score: str):
+        expect(self.title).to_be_visible()
+        expect(self.title).to_have_text(title)
+        expect(self.estimated_time).to_be_visible()
+        expect(self.description_textarea).to_be_visible()
+        expect(self.max_score_input).to_be_visible()
+        expect(self.min_score_input).to_be_visible()
 
 
 

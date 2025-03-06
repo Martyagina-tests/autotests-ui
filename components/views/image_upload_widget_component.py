@@ -17,6 +17,7 @@ class ImageUploadWidgetComponent(BaseComponent):
         self.image_upload_info_description = page.get_by_test_id(
             f'{identifier}-image-upload-widget-info-description-text'
         )
+
         self.upload_button = page.get_by_test_id(f'{identifier}-image-upload-widget-upload-button')
         self.remove_button = page.get_by_test_id(f'{identifier}-image-upload-widget-remove-button')
         self.upload_input = page.get_by_test_id(f'{identifier}-image-upload-widget-input')

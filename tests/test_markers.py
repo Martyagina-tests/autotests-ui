@@ -45,7 +45,7 @@ class TestUserAuthentication:
     @pytest.mark.smoke   # У одной функции несколько маркировок
     #@pytest.mark.regression
     @pytest.mark.critical
-    def test_critical_login():
+    def test_critical_login(self):
         pass
 
 @pytest.mark.ui   # У одной функции несколько маркировок + маркировка для класса
