@@ -27,9 +27,13 @@ class CreateCourseFormComponent(BaseComponent):
         expect(self.title).to_be_visible()
         expect(self.title).to_have_text(title)
         expect(self.estimated_time).to_be_visible()
+        expect(self.estimated_time).to_have_text(estimated_time)
         expect(self.description_textarea).to_be_visible()
+        expect(self.description_textarea).to_have_text(description)
         expect(self.max_score_input).to_be_visible()
+        expect(self.max_score_input).to_have_text(max_score)
         expect(self.min_score_input).to_be_visible()
+        expect(self.min_score_input).to_have_text(min_score)
 
 
 
