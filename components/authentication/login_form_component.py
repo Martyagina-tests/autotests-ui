@@ -9,7 +9,6 @@ class LoginFormComponent(BaseComponent):
         self.email_input = Input(page,'login-form-email-input', "email")
         self.password_input = Input(page,'login-form-password-input', "password")
 
-
     def fill(self, email: str, password: str):
         self.email_input.fill(email)
         self.password_input.fill(password)

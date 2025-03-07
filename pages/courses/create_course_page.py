@@ -1,4 +1,3 @@
-
 from playwright.sync_api import Page, expect
 
 from components.courses.create_course_exercise_form_component import CreateCourseExerciseFormComponent
@@ -9,6 +8,11 @@ from components.views.empty_view_component import EmptyViewComponent
 from components.views.image_upload_widget_component import ImageUploadWidgetComponent
 from playwright.sync_api import Page, expect
 from pages.base_page import BasePage
+from elements.image import Image
+from elements.icon import Icon
+from elements.text import Text
+from elements.button import Button
+from elements.file_input import FileInput
 
 
 class CreateCoursePage(BasePage):
@@ -17,8 +21,9 @@ class CreateCoursePage(BasePage):
 
         self.image_upload_widget = ImageUploadWidgetComponent(page, 'create-course-preview')
         self.exercises_empty_view = EmptyViewComponent(page, 'create-course-exercises')
-        self.create_course_toolbar_view_component = CreateCourseToolbarViewComponent(page)
-
+        self.create_course_toolbar_view = CreateCourseToolbarViewComponent(page)
+        self.create_course_form = CreateCourseFormComponent(page)
+        self.create_course_exercises_toolbar_view = CreateExerciseToolbarViewComponent(page)
         self.create_course_title = page.get_by_test_id('create-course-toolbar-title-text')
         self.create_course_button = page.get_by_test_id('create-course-toolbar-create-course-button')
 
