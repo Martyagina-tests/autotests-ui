@@ -55,7 +55,7 @@ class TestAuthorization:
         ]
     )
     @allure.tag("USER_LOGIN")
-    @allure.title("Wrong_email_or_password")
+    @allure.title("User login with wrong email or password")
     @allure.severity(Severity.CRITICAL)
     def test_wrong_email_or_password_authorization(self, login_page: LoginPage, email: str, password: str):
         login_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login")
@@ -63,8 +63,7 @@ class TestAuthorization:
         login_page.click_login_button()
         login_page.check_visible_wrong_email_or_password_alert()
 
-    @pytest.mark.regression
-    @pytest.mark.authorization
+
     @allure.tag(AllureTag.REGRESSION, AllureTag.AUTHORIZATION)
     @allure.epic(AllureEpic.LMS)
     @allure.feature(AllureFeature.AUTHENTICATION)

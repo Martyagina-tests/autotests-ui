@@ -12,6 +12,7 @@ from allure_commons.types import Severity
 
 @pytest.mark.regression
 @pytest.mark.registration
+@pytest.mark.dashboard
 @allure.tag(AllureTag.REGRESSION, AllureTag.REGISTRATION)
 @allure.epic(AllureEpic.LMS) # Добавили epic
 @allure.parent_suite(AllureEpic.LMS)
