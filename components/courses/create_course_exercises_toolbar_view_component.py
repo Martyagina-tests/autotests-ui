@@ -5,7 +5,6 @@ from elements.button import Button
 
 class CreateExerciseToolbarViewComponent:
     def __init__(self, page: Page):
-        self.page = page
         self.title = Text(page,'create-course-exercises-box-toolbar-title-text', "Exercises")
         self.button = Button(page,'create-course-exercises-box-toolbar-create-exercise-button', "Create exercise button")
 

@@ -1,6 +1,3 @@
-from playwright.sync_api import Page, expect
-
-from components.courses.create_course_exercise_form_component import CreateCourseExerciseFormComponent
 from components.courses.create_course_form_component import CreateCourseFormComponent
 from components.courses.create_course_toolbar_view_component import CreateCourseToolbarViewComponent
 from components.courses.create_course_exercises_toolbar_view_component import CreateExerciseToolbarViewComponent
@@ -8,11 +5,7 @@ from components.views.empty_view_component import EmptyViewComponent
 from components.views.image_upload_widget_component import ImageUploadWidgetComponent
 from playwright.sync_api import Page, expect
 from pages.base_page import BasePage
-from elements.image import Image
-from elements.icon import Icon
-from elements.text import Text
-from elements.button import Button
-from elements.file_input import FileInput
+
 
 
 class CreateCoursePage(BasePage):

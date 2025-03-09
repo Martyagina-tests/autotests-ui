@@ -5,6 +5,7 @@ from components.navigation.navbar_component import NavbarComponent
 from components.charts.chart_view_component import ChartViewComponent
 from components.dashboard.dashboard_toolbar_view_component import DashboardToolbarViewComponent
 
+
 class DashboardPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)

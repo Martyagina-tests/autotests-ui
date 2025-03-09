@@ -6,7 +6,6 @@ import allure
 class DashboardToolbarViewComponent(BaseComponent):
     def __init__(self,  page: Page):
         super().__init__(page)
-        self.page = page
         self.title = Text(page,'dashboard-toolbar-title-text',"Dashboard toolbar title text")
 
     @allure.step('Check visible dashboard toolbar title')
