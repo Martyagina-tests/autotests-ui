@@ -4,7 +4,7 @@ from playwright.sync_api import Playwright, Page
 from config import settings, Settings
 from pages.authentication.registration_page import RegistrationPage
 from tools.playwright.pages import initialize_playwright_page
-
+from tools.routes import AppRoute
 
 @pytest.fixture
 def chromium_page(request: SubRequest, playwright: Playwright) -> Page:
@@ -19,7 +19,7 @@ def initialize_browser_state(playwright: Playwright, settings: Settings):
     page = context.new_page()
 
     registration_page = RegistrationPage(page=page)
-    registration_page.visit('AppRoute.REGISTRATION')
+    registration_page.visit(AppRoute.REGISTRATION)
     registration_page.registration_form.fill(
         email=settings.test_user.email,  # Используем settings.test_user.email
         username=settings.test_user.username,  # Используем settings.test_user.username
