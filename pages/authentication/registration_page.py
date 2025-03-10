@@ -1,10 +1,12 @@
+import re
+
 from playwright.sync_api import Page
 from pages.base_page import BasePage
 from components.authentication.registration_form_component import RegistrationFormComponent
 from elements.button import Button
 from elements.link import Link
 
-import re
+
 
 class RegistrationPage(BasePage): # Регистрация
     def __init__(self, page: Page):

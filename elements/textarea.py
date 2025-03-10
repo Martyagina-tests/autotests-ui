@@ -1,8 +1,9 @@
 import allure
-from playwright.sync_api import Locator, expect
 
+from playwright.sync_api import Locator, expect
 from elements.base_element import BaseElement
 from tools.logger import get_logger
+
 logger = get_logger("TEXTAREA")
 
 class Textarea(BaseElement):

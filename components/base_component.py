@@ -1,6 +1,7 @@
 from playwright.sync_api import Page, expect
 from  typing import Pattern
 from tools.logger import get_logger
+
 logger = get_logger("BASE_COMPONENT")
 
 class BaseComponent:
