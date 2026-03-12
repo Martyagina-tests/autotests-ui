@@ -11,6 +11,14 @@ on:
 jobs:
     run-tests:
       runs-on: ubuntu-latest
+      env:
+        APP_URL: "https://nikita-filonov.github.io/qa-automation-engineer-ui-course"
+        HEADLESS: "true"
+        BROWSERS: '["webkit","chromium","firefox"]'
+        TEST_USER_EMAIL: "user.name@gmail.com"
+        TEST_USER_USERNAME: "username"
+        TEST_USER_PASSWORD: "password"
+        TEST_DATA_IMAGE_PNG_FILE: "./testdata/files/image.png"
 
       steps:
         - name: Check out repository
