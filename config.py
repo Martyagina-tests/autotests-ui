@@ -12,7 +12,6 @@ class Browser(str, Enum):
 
 class TestUser(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="TEST_USER")
-
     email: EmailStr
     username: str
     password: str
@@ -20,7 +19,6 @@ class TestUser(BaseSettings):
 
 class TestData(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="TEST_DATA")
-
     image_png_file: FilePath
 
 

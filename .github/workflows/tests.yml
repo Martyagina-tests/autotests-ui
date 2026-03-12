@@ -12,23 +12,14 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
-    env:
-      APP_URL: "https://nikita-filonov.github.io/qa-automation-engineer-ui-course"
-      HEADLESS: "true"
-      BROWSERS: '["webkit","chromium","firefox"]'
-      TEST_USER_EMAIL: "user.name@gmail.com"
-      TEST_USER_USERNAME: "username"
-      TEST_USER_PASSWORD: "password"
-      TEST_DATA_IMAGE_PNG_FILE: "./testdata/files/image.png"
-
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -36,26 +27,43 @@ jobs:
           pip install -r requirements.txt
           playwright install --with-deps
 
-      - name: Run Playwright tests with pytest
-        run: pytest -m regression --alluredir=./allure-results --numprocesses 2
+      # --- Создаём .env на лету с нужными переменными ---
+      - name: Create .env file
+        run: |
+          echo "APP_URL=https://nikita-filonov.github.io/qa-automation-engineer-ui-course" >> .env
+          echo "HEADLESS=true" >> .env
+          echo "BROWSERS=[\"webkit\",\"chromium\",\"firefox\"]" >> .env
+          echo "TEST_USER.EMAIL=user.name@gmail.com" >> .env
+          echo "TEST_USER.USERNAME=username" >> .env
+          echo "TEST_USER.PASSWORD=password" >> .env
+          echo "TEST_DATA.IMAGE_PNG_FILE=./testdata/files/image.png" >> .env
 
+      # Запуск тестов с pytest и генерация Allure отчётов
+      - name: Run Playwright tests with pytest and generate Allure results
+        run: |
+          pytest -m regression --alluredir=allure-results --numprocesses 2
+
+      # Получаем историю отчётов Allure
       - name: Get Allure history
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: always()
         continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: Generate Allure Report
-        uses: andgineer/allure-report@v3
+      # Генерация отчёта Allure с историей
+      - name: Generates Allure Report with history
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
         with:
           allure_results: allure-results
           allure_history: allure-history
 
+      # Деплой отчёта на GitHub Pages
       - name: Deploy report to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
         if: always()
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
