@@ -3,11 +3,6 @@ name: UI tests
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   run-tests:
@@ -41,11 +36,12 @@ jobs:
       - name: Run tests
         run: pytest -m regression --alluredir=allure-results --numprocesses 2
 
-      - name: Upload allure results
+      - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
+
 
   publish-report:
     runs-on: ubuntu-latest
@@ -55,23 +51,28 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Download allure results
+      - name: Download results
         uses: actions/download-artifact@v4
         with:
           name: allure-results
           path: allure-results
 
-      - name: Install Allure
-        run: |
-          npm install -g allure-commandline --save-dev
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-      - name: Generate report
-        run: |
-          allure generate allure-results -o allure-report --clean
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.9
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
 
-      - name: Deploy to Github Pages
+      - name: Deploy report
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-report
+          publish_dir: allure-history
