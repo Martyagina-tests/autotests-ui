@@ -55,7 +55,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # --- Загружаем артефакт с результатами тестов ---
+      # --- Загружаем артефакт с результатами тестов --
       - name: Download Allure results artifact
         uses: actions/download-artifact@v4
         with:
