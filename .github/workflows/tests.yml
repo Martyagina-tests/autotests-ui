@@ -1,4 +1,4 @@
-name : UI tests
+name: UI tests
 
 on:
   push:
@@ -9,57 +9,54 @@ on:
       - main
 
 jobs:
-    run-tests:
-      runs-on: ubuntu-latest
-      env:
-        APP_URL: https://nikita-filonov.github.io/qa-automation-engineer-ui-course
-        HEADLESS: true
-        BROWSERS: '["webkit","chromium","firefox"]'
+  run-tests:
+    runs-on: ubuntu-latest
 
-        TEST_USER__EMAIL: user.name@gmail.com
-        TEST_USER__USERNAME: username
-        TEST_USER__PASSWORD: password
+    env:
+      APP_URL: "https://nikita-filonov.github.io/qa-automation-engineer-ui-course"
+      HEADLESS: "true"
+      BROWSERS: '["webkit","chromium","firefox"]'
+      TEST_USER_EMAIL: "user.name@gmail.com"
+      TEST_USER_USERNAME: "username"
+      TEST_USER_PASSWORD: "password"
+      TEST_DATA_IMAGE_PNG_FILE: "./testdata/files/image.png"
 
-        TEST_DATA__IMAGE_PNG_FILE: ./testdata/files/image.png
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
 
-        - name: Set up Python
-          uses: actions/setup-python@v3
-          with:
-            python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install --with-deps
 
-        - name: Install dependencies
-          run: |
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
-            playwright install --with-deps
-            
+      - name: Run Playwright tests with pytest
+        run: pytest -m regression --alluredir=./allure-results --numprocesses 2
 
-        - name: Run Playwright tests with pytest and generate Allure results
-          run: |
-            pytest -m regression --alluredir=./allure-results --numprocesses 2
-            
+      - name: Get Allure history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-        - name: Get Allure history
-          uses: actions/checkout@v3
-          if: always()
-          continue-on-error: true
-          with:
-            ref: gh-pages
-            path: gh-pages
+      - name: Generate Allure Report
+        uses: andgineer/allure-report@v3
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
 
-        - name: Allure Report action from marketplace
-          uses: andgineer/allure-report@v3
-          with:
-            allure_results: allure-results
-            allure_history: allure-history
-
-        - name: Deploy report to Github Pages
-          uses: peaceiris/actions-gh-pages@v2
-          env:
-            PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            PUBLISH_BRANCH: gh-pages
-            PUBLISH_DIR: allure-history
+      - name: Deploy report to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
