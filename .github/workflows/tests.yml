@@ -1,8 +1,5 @@
 name: UI tests
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 on:
   push:
     branches:
@@ -11,17 +8,21 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -40,9 +41,9 @@ jobs:
           echo "TEST_DATA.IMAGE_PNG_FILE=./testdata/files/image.png" >> .env
 
       - name: Run Playwright tests with pytest
-        run: pytest -m regression --alluredir=./allure-results --numprocesses 2
+        run: pytest -m regression --alluredir=allure-results --numprocesses 2
 
-      - name: Upload Allure results artifact
+      - name: Upload Allure results
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
@@ -51,23 +52,22 @@ jobs:
   publish-report:
     runs-on: ubuntu-latest
     needs: run-tests
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Allure results artifact
+      - name: Download Allure results
         uses: actions/download-artifact@v4
         with:
           name: allure-results
           path: allure-results
 
-      - name: Generate Allure Report
+      - name: Generate Allure report
         uses: andgineer/allure-report@v3
         with:
           allure-results: allure-results
-          reports-site-path: allure-report   # указываем куда будет сгенерирован отчёт
-          report-name: UI Regression Report
-          ci-name: github-actions
+          reports-site-path: allure-report
 
       - name: Deploy report to Github Pages
         uses: peaceiris/actions-gh-pages@v4
