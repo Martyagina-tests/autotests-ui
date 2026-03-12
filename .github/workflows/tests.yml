@@ -42,7 +42,7 @@ jobs:
 
       # --- Сохраняем allure-results как артефакт ---
       - name: Upload Allure results artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
@@ -73,7 +73,7 @@ jobs:
 
       # Генерация отчёта Allure
       - name: Generate Allure Report
-        uses: andgineer/allure-report@v3
+        uses: andgineer/allure-report@v4
         with:
           allure_results: allure-results
           allure_history: allure-history
