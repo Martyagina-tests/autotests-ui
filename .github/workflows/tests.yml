@@ -1,107 +1,37 @@
-name: UI tests
+publish-report:
+  if: always()
+  needs: [ run-tests ]
+  runs-on: ubuntu-latest
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-jobs:
-  run-tests:
-    runs-on: ubuntu-latest
+    - name: Download Allure results
+      uses: actions/download-artifact@v4
+      with:
+        name: allure-results
+        path: allure-results
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+    # ✅ Устанавливаем Java (нужно для Allure)
+    - name: Install Java
+      run: sudo apt-get update && sudo apt-get install -y default-jre
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    # ✅ Устанавливаем Allure
+    - name: Install Allure
+      run: |
+        wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+        tar -zxvf allure-2.24.0.tgz
+        sudo ln -s $PWD/allure-2.24.0/bin/allure /usr/bin/allure
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          playwright install --with-deps
+    # ✅ Генерируем отчет
+    - name: Generate Allure report
+      run: allure generate allure-results -o allure-report
 
-      # ✅ добавляем .env (ВАЖНО для ui-coverage)
-      - name: Create .env
-        run: |
-          echo 'APPS=[{"key":"ui-course","url":"https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login","name":"UI Course"}]' >> .env
-
-      - name: Run tests
-        run: |
-          pytest -m regression --alluredir=allure-results --numprocesses 2
-
-      # ✅ восстанавливаем историю покрытия
-      - name: Restore Coverage history
-        uses: actions/cache/restore@v4
-        with:
-          path: coverage-history.json
-          key: coverage-history-${{ github.run_id }}
-          restore-keys: |
-            coverage-history-
-
-      # ✅ генерируем отчет (ВАЖНО)
-      - name: Generate Coverage report
-        run: |
-          ui-coverage-tool save-report
-
-      # ✅ сохраняем историю
-      - name: Cache Coverage history
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: coverage-history.json
-          key: coverage-history-${{ github.run_id }}
-
-      # ❗ ВАЖНО: загружаем ВСЮ папку, не файл
-      - name: Upload Coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage-report/
-
-      - name: Upload Allure results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
-
-
-  publish-report:
-    if: always()
-    needs: [ run-tests ]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Download Allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
-
-      # ✅ ИСПРАВЛЕНО: версия action
-      - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.8
-        if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-
-      - name: Deploy report to Github Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+    # ✅ Деплой в gh-pages
+    - name: Deploy report
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: allure-report
