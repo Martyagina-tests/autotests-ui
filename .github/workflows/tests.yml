@@ -6,18 +6,21 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -25,12 +28,20 @@ jobs:
           pip install -r requirements.txt
           playwright install --with-deps
 
-      # ✅ обязательно для ui-coverage
       - name: Create .env
         run: |
-          echo 'APPS=[{"key":"ui-course","url":"https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login","name":"UI Course"}]' >> .env
+          echo "APP_URL=https://nikita-filonov.github.io/qa-automation-engineer-ui-course" >> .env
+          echo "HEADLESS=true" >> .env
+          echo "BROWSERS=[\"webkit\",\"chromium\",\"firefox\"]" >> .env
+          echo "TEST_USER.EMAIL=user.name@gmail.com" >> .env
+          echo "TEST_USER.USERNAME=username" >> .env
+          echo "TEST_USER.PASSWORD=password" >> .env
+          echo "TEST_DATA.IMAGE_PNG_FILE=./testdata/files/image.png" >> .env
 
-      # ✅ восстанавливаем историю ДО запуска тестов
+      - name: Run tests
+        run: pytest -m regression --alluredir=allure-results --numprocesses 2
+
+# Восстанавливаем историю покрытия из кеша
       - name: Restore Coverage history
         uses: actions/cache/restore@v4
         with:
@@ -39,31 +50,26 @@ jobs:
           restore-keys: |
             coverage-history-
 
-      - name: Run tests
-        run: |
-          pytest -m regression --alluredir=allure-results --numprocesses 2
-
-      # ✅ генерируем coverage отчет
+      # Генерируем HTML-отчет и обновляем историю
       - name: Generate Coverage report
-        if: always()
         run: |
           ui-coverage-tool save-report
 
-      # ✅ сохраняем историю
-      - name: Cache Coverage history
+      # Сохраняем историю обратно в кеш
+      - name: Cache Coverage  history
         if: always()
         uses: actions/cache/save@v4
         with:
           path: coverage-history.json
           key: coverage-history-${{ github.run_id }}
 
-      # ❗ ВАЖНО: загружаем ПАПКУ, не файл
+      # Загружаем HTML-отчет как артефакт
       - name: Upload Coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage-report/
+          path: coverage.html
 
       - name: Upload Allure results
         if: always()
@@ -71,3 +77,36 @@ jobs:
         with:
           name: allure-results
           path: allure-results
+
+
+
+
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: run-tests
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Install Allure
+        run: |
+          npm install -g allure-commandline --save-dev
+
+      - name: Generate report
+        run: |
+          allure generate allure-results -o allure-report --clean
+
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
