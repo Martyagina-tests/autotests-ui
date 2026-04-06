@@ -3,3 +3,4 @@ pytest_plugins = (
     "fixtures.allure",
     "fixtures.browsers" # Подключали ранее в предыдущих уроках
 )
+
