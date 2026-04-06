@@ -41,7 +41,8 @@ jobs:
       - name: Run tests
         run: pytest -m regression --alluredir=allure-results --numprocesses 2
 
-      # Восстанавливаем историю покрытия из кеша
+      # Восстанавливаем историю покрытия
+
       - name: Restore Coverage history
         uses: actions/cache@v4
         with:
