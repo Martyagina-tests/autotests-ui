@@ -17,9 +17,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.14.3'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -27,9 +27,25 @@ jobs:
           pip install -r requirements.txt
           playwright install --with-deps
 
-      - name: Run Playwright tests with pytest and generate Allure results
+      - name: Create .env file
         run: |
-          pytest -m regression --alluredir=allure-results --numprocesses 2
+          echo "APP_URL=https://nikita-filonov.github.io/qa-automation-engineer-ui-course" >> .env
+          echo "HEADLESS=true" >> .env
+          echo "BROWSERS=[\"webkit\",\"chromium\",\"firefox\"]" >> .env
+          echo "TEST_USER.EMAIL=user.name@gmail.com" >> .env
+          echo "TEST_USER.USERNAME=username" >> .env
+          echo "TEST_USER.PASSWORD=password" >> .env
+          echo "TEST_DATA.IMAGE_PNG_FILE=./testdata/files/image.png" >> .env
+
+      - name: Run Playwright tests with pytest and generate coverage data
+        run: |
+          # Запускаем тесты с сбором покрытия
+          pytest -m regression \
+            --alluredir=allure-results \
+            --numprocesses 2 \
+            --cov=. \
+            --cov-report=json:coverage.json \
+            --cov-report=term
 
       # Восстанавливаем историю покрытия из кеша
       - name: Restore Coverage history
@@ -46,7 +62,7 @@ jobs:
           ui-coverage-tool save-report
 
       # Сохраняем историю обратно в кеш
-      - name: Cache Coverage  history
+      - name: Cache Coverage history
         if: always()
         uses: actions/cache/save@v4
         with:
@@ -67,7 +83,6 @@ jobs:
         with:
           name: allure-results
           path: allure-results
-
 
   publish-report:
     if: always()
