@@ -26,7 +26,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install ui-coverage-tool
+          pip install .
           playwright install --with-deps
 
       - name: Create .env
@@ -42,36 +42,43 @@ jobs:
       - name: Run tests
         run: pytest -m regression --alluredir=allure-results --numprocesses 2
 
-      # Восстанавливаем историю покрытия
-
+      # ✅ Восстановление истории покрытия
       - name: Restore Coverage history
         uses: actions/cache@v4
         with:
           path: coverage-history.json
           key: coverage-history
-          restore-keys: |
-            coverage-history
 
-      # Генерируем HTML-отчет и обновляем историю
+      # ✅ Генерация coverage (даже если тесты упали)
       - name: Generate Coverage report
+        if: always()
         run: |
           ui-coverage-tool save-report
 
-      # Сохраняем обновленную историю покрытия
+      # 🔍 Диагностика (можешь удалить потом)
+      - name: Debug coverage files
+        run: |
+          echo "=== ROOT ==="
+          ls -la
+          echo "=== HTML FILES ==="
+          find . -name "*.html"
+
+      # ✅ Сохраняем историю
       - name: Cache Coverage history
         uses: actions/cache@v4
         with:
           path: coverage-history.json
           key: coverage-history
 
-      # Загружаем HTML-отчет как артефакт
+      # ✅ Загружаем coverage как артефакт
       - name: Upload Coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage/**/*.html
+          path: "**/*.html"
 
+      # ✅ Загружаем Allure результаты
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,12 +101,10 @@ jobs:
           path: allure-results
 
       - name: Install Allure
-        run: |
-          npm install -g allure-commandline --save-dev
+        run: npm install -g allure-commandline --save-dev
 
       - name: Generate report
-        run: |
-          allure generate allure-results -o allure-report --clean
+        run: allure generate allure-results -o allure-report --clean
 
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v4
