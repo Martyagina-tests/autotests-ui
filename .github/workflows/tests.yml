@@ -42,35 +42,24 @@ jobs:
       - name: Run tests
         run: pytest -m regression --alluredir=allure-results --numprocesses 2
 
-      # ✅ Восстановление истории покрытия
+      # Восстанавливаем историю покрытия
+
       - name: Restore Coverage history
         uses: actions/cache@v4
         with:
           path: coverage-history.json
           key: coverage-history
 
-      # ✅ Генерация coverage (даже если тесты упали)
       - name: Generate Coverage report
         if: always()
         run: |
           ui-coverage-tool save-report
 
-      # 🔍 Диагностика (можешь удалить потом)
-      - name: Debug coverage files
+      - name: Debug files
         run: |
-          echo "=== ROOT ==="
           ls -la
-          echo "=== HTML FILES ==="
           find . -name "*.html"
 
-      # ✅ Сохраняем историю
-      - name: Cache Coverage history
-        uses: actions/cache@v4
-        with:
-          path: coverage-history.json
-          key: coverage-history
-
-      # ✅ Загружаем coverage как артефакт
       - name: Upload Coverage report
         if: always()
         uses: actions/upload-artifact@v4
@@ -78,7 +67,6 @@ jobs:
           name: coverage-report
           path: "**/*.html"
 
-      # ✅ Загружаем Allure результаты
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -101,10 +89,12 @@ jobs:
           path: allure-results
 
       - name: Install Allure
-        run: npm install -g allure-commandline --save-dev
+        run: |
+          npm install -g allure-commandline --save-dev
 
       - name: Generate report
-        run: allure generate allure-results -o allure-report --clean
+        run: |
+          allure generate allure-results -o allure-report --clean
 
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v4
